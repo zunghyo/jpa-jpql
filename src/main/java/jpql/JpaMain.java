@@ -82,6 +82,7 @@ public class JpaMain {
             System.out.println("result2 = " + result2.getUsername());
             */
 
+            /*
             //프로젝션
             Member member = new Member();
             member.setUsername("kim");
@@ -111,6 +112,42 @@ public class JpaMain {
             //3. 스칼라 타입 프로젝션
             em.createQuery("SELECT m.username, m.age FROM Member m")
                     .getResultList();
+             */
+
+            //프로젝션 - 여러 값 조회
+
+            //1. Query 타입으로 조회
+            Member member = new Member();
+            member.setUsername("kim");
+            member.setAge(10);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            List result4 = em.createQuery("SELECT m.username, m.age FROM Member m")
+                    .getResultList();
+
+            Object o = result4.get(0);
+            Object[] resultO1 = (Object[]) o;
+            System.out.println("resultO1[0] = " + resultO1[0]);
+            System.out.println("resultO1[1] = " + resultO1[1]);
+
+            //2. Object[] 타입으로 조회
+            List<Object[]> result5 = em.createQuery("SELECT m.username, m.age FROM Member m")
+                    .getResultList();
+
+            Object[] resultO2 = result5.get(0);
+            System.out.println("resultO2[0] = " + resultO2[0]);
+            System.out.println("resultO2[1] = " + resultO2[1]);
+
+            //3. new 명령어로 조회
+            List<MemberDTO> result6 = em.createQuery("SELECT new jpql.MemberDTO(m.username, m.age) FROM Member m", MemberDTO.class)
+                    .getResultList();
+
+            MemberDTO memberDTO = result6.get(0);
+            System.out.println("memberDTO = " + memberDTO.getUsername());
+            System.out.println("memberDTO = " + memberDTO.getAge());
 
             tx.commit();
         } catch (Exception e){

@@ -59,6 +59,7 @@ public class JpaMain {
             System.out.println("singleResult = " + singleResult);
             */
 
+            /*
             //파라미터 바인딩 - 이름 기준, 위치 기준
             Member member = new Member();
             member.setUsername("kim");
@@ -79,6 +80,37 @@ public class JpaMain {
                     .setParameter(1,"kim")
                     .getSingleResult();
             System.out.println("result2 = " + result2.getUsername());
+            */
+
+            //프로젝션
+            Member member = new Member();
+            member.setUsername("kim");
+            member.setAge(10);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //1. 엔티티 프로젝션
+            List<Member> result1 = em.createQuery("SELECT m FROM Member m", Member.class)
+                    .getResultList();
+            Member findMember = result1.get(0);
+            findMember.setAge(20);
+
+            //묵시적 조인
+            List<Team> result2 = em.createQuery("SELECT m.team FROM Member m", Team.class)
+                    .getResultList();
+            //명시적 조인 권장
+            List<Team> result3 = em.createQuery("SELECT t FROM Member m join m.team t", Team.class)
+                    .getResultList();
+
+            //2. 임베디드 타입 프로젝션
+            em.createQuery("SELECT o.address FROM Order o", Address.class)
+                    .getResultList();
+
+            //3. 스칼라 타입 프로젝션
+            em.createQuery("SELECT m.username, m.age FROM Member m")
+                    .getResultList();
 
             tx.commit();
         } catch (Exception e){

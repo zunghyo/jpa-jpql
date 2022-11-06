@@ -13,6 +13,7 @@ public class JpaMain {
         tx.begin();
 
         try{
+            /*
             //반환타입 - TypedQuery, Query
             Member member = new Member();
             member.setUsername("kim");
@@ -28,6 +29,33 @@ public class JpaMain {
 
             //반환타입이 명확하지 않을 때 -> Query
             Query query3 = em.createQuery("SELECT m.username, m.age FROM Member m");
+            */
+
+            //결과 조회 API - getResultList(), getSingleResult()
+            Member memberA = new Member();
+            memberA.setUsername("kim");
+            memberA.setAge(20);
+            em.persist(memberA);
+
+            Member memberB = new Member();
+            memberB.setUsername("Lee");
+            memberB.setAge(21);
+            em.persist(memberB);
+
+            em.flush();
+            em.clear();
+
+            TypedQuery<Member> query = em.createQuery("SELECT m FROM Member m", Member.class);
+
+            //결과가 하나 이상 일 때
+            List<Member> resultList = query.getResultList();
+            for (Member member : resultList) {
+                System.out.println("member = " + member);
+            }
+
+            //결과가 정확히 하나 일 때
+            Member singleResult = query.getSingleResult();
+            System.out.println("singleResult = " + singleResult);
 
             tx.commit();
         } catch (Exception e){

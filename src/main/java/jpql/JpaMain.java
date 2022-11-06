@@ -31,6 +31,7 @@ public class JpaMain {
             Query query3 = em.createQuery("SELECT m.username, m.age FROM Member m");
             */
 
+            /*
             //결과 조회 API - getResultList(), getSingleResult()
             Member memberA = new Member();
             memberA.setUsername("kim");
@@ -56,6 +57,28 @@ public class JpaMain {
             //결과가 정확히 하나 일 때
             Member singleResult = query.getSingleResult();
             System.out.println("singleResult = " + singleResult);
+            */
+
+            //파라미터 바인딩 - 이름 기준, 위치 기준
+            Member member = new Member();
+            member.setUsername("kim");
+            member.setAge(20);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //이름 기준
+            Member result1 = em.createQuery("SELECT m FROM Member m WHERE m.username = :username", Member.class)
+                    .setParameter("username","kim")
+                    .getSingleResult();
+            System.out.println("result1 = " + result1.getUsername());
+
+            //위치 기준 (사용 권장 X)
+            Member result2 = em.createQuery("SELECT m FROM Member m WHERE m.username = ?1", Member.class)
+                    .setParameter(1,"kim")
+                    .getSingleResult();
+            System.out.println("result2 = " + result2.getUsername());
 
             tx.commit();
         } catch (Exception e){

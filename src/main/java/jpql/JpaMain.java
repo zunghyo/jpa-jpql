@@ -416,6 +416,7 @@ public class JpaMain {
             }
             */
 
+            /*
             //JPQL - 엔티티 직접 사용
             Member member = new Member();
             member.setUsername("회원");
@@ -435,7 +436,28 @@ public class JpaMain {
             List<Member> result2 = em.createQuery(query2, Member.class)
                     .setParameter("memberId", member.getId())
                     .getResultList();
+            */
 
+            //벌크 연산
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            em.persist(member2);
+
+            //Flush 자동 호출
+            int resultCount = em.createQuery("update Member m set m.age = 20 ")
+                    .executeUpdate();
+            System.out.println("resultCount = " + resultCount);
+
+            //벌크 연산 수행 후 영속성 컨텍스트 초기화
+            em.clear();
+
+            Member findMember = em.find(Member.class, member1.getId());
+            System.out.println("findMember = " + findMember.getAge());
+            
             tx.commit();
         } catch (Exception e){
             e.printStackTrace();

@@ -349,6 +349,7 @@ public class JpaMain {
             System.out.println("result4 = " + result4);
             */
 
+            /*
             //페치조인 - 기본
             Team team1 = new Team();
             team1.setName("팀A");
@@ -413,6 +414,27 @@ public class JpaMain {
                     System.out.println("member = " + member);
                 }
             }
+            */
+
+            //JPQL - 엔티티 직접 사용
+            Member member = new Member();
+            member.setUsername("회원");
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //엔티티를 파라미터로 전달
+            String query1 = "select m from Member m where m = :member";
+            List<Member> result1 = em.createQuery(query1, Member.class)
+                        .setParameter("member", member)
+                        .getResultList();
+
+            //식별자를 직접전달
+            String query2 = "select m from Member m where m.id = :memberId";
+            List<Member> result2 = em.createQuery(query2, Member.class)
+                    .setParameter("memberId", member.getId())
+                    .getResultList();
 
             tx.commit();
         } catch (Exception e){

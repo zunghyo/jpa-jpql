@@ -151,6 +151,7 @@ public class JpaMain {
             System.out.println("memberDTO = " + memberDTO.getAge());
             */
 
+            /*
             //페이징
             for (int i = 0; i < 100; i++) {
                 Member member = new Member();
@@ -169,7 +170,35 @@ public class JpaMain {
             for (Member member : result7) {
                 System.out.println("member.toString() = " + member.toString());
             }
-            
+            */
+
+            //조인
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("memberA");
+            member.setAge(21);
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //1. 내부 조인
+            String query1 = "select m from Member m inner join m.team t";
+            //2. 외부 조인
+            String query2 = "select m from Member m left join m.team t";
+            //3. 세타 조인
+            String query3 = "select m from Member m, Team t WHERE m.username = t.name";
+
+            //on 절
+            String query4 = "select m from Member m left join Team t on m.username = t.name";
+
+            List<Member> result = em.createQuery(query4, Member.class)
+                    .getResultList();
+
             tx.commit();
         } catch (Exception e){
             e.printStackTrace();

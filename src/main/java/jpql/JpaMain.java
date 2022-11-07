@@ -201,6 +201,7 @@ public class JpaMain {
                     .getResultList();
             */
 
+            /*
             //서브쿼리
             //1. exists
             String query1 = "select m from Member m where exists(select t from m.team t where t.name ='a')";
@@ -211,6 +212,28 @@ public class JpaMain {
 
             List<Member> result = em.createQuery(query1, Member.class)
                     .getResultList();
+             */
+
+            //JPQL 타입 표현
+            Member member = new Member();
+            member.setUsername("memberA");
+            member.setAge(21);
+            member.setType(MemberType.ADMIN);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            String query1 = "select m.username, 'HELLO', true, 10L, 10D, 10F, m.type from Member m "+
+                            "where m.type = jpql.MemberType.ADMIN";
+            List<Object[]> result = em.createQuery(query1)
+                    .getResultList();
+
+            for (Object[] objects : result) {
+                for (int i = 0; i < objects.length; i++) {
+                    System.out.println("objects["+i+"] = " + objects[i]);
+                }
+            }
 
             tx.commit();
         } catch (Exception e){

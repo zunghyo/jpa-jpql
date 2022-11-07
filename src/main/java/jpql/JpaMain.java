@@ -172,6 +172,7 @@ public class JpaMain {
             }
             */
 
+            /*
             //조인
             Team team = new Team();
             team.setName("teamA");
@@ -197,6 +198,18 @@ public class JpaMain {
             String query4 = "select m from Member m left join Team t on m.username = t.name";
 
             List<Member> result = em.createQuery(query4, Member.class)
+                    .getResultList();
+            */
+
+            //서브쿼리
+            //1. exists
+            String query1 = "select m from Member m where exists(select t from m.team t where t.name ='a')";
+            //2. ALL
+            String query2 = "select o from Order o where o.orderAmount > ALL(select p.stockAmount from Product p)";
+            //3. ANY
+            String query3 = "select m from Member m where m.team = ANY(select t from Team t)";
+
+            List<Member> result = em.createQuery(query1, Member.class)
                     .getResultList();
 
             tx.commit();

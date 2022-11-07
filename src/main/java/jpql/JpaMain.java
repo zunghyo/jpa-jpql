@@ -214,6 +214,7 @@ public class JpaMain {
                     .getResultList();
              */
 
+            /*
             //JPQL 타입 표현
             Member member = new Member();
             member.setUsername("memberA");
@@ -233,6 +234,34 @@ public class JpaMain {
                 for (int i = 0; i < objects.length; i++) {
                     System.out.println("objects["+i+"] = " + objects[i]);
                 }
+            }
+            */
+
+            //조건식(CASE 등등)
+            Member member = new Member();
+            member.setAge(10);
+            member.setUsername("memberA");
+            member.setType(MemberType.ADMIN);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //1. 기본 CASE식
+            String query1 = "select " +
+                                "case when m.age <= 10 then '학생요금' " +
+                                "when m.age >= 60 then '경로요금' " +
+                                "else '일반요금' end " +
+                            "from Member m";
+            //2. COALESCE
+            String query2 = "select coalesce(m.username, '이름 없는 회원') from Member m";
+            //3. NULLIF
+            String query3 = "select nullif(m.username, '관리자') from Member m";
+            List<String> result = em.createQuery(query3, String.class)
+                    .getResultList();
+
+            for (String s : result) {
+                System.out.println("s = " + s);
             }
 
             tx.commit();

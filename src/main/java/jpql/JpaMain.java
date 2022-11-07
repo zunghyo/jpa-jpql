@@ -114,6 +114,7 @@ public class JpaMain {
                     .getResultList();
              */
 
+            /*
             //프로젝션 - 여러 값 조회
 
             //1. Query 타입으로 조회
@@ -148,7 +149,27 @@ public class JpaMain {
             MemberDTO memberDTO = result6.get(0);
             System.out.println("memberDTO = " + memberDTO.getUsername());
             System.out.println("memberDTO = " + memberDTO.getAge());
+            */
 
+            //페이징
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setUsername("member"+i);
+                member.setAge(i);
+                em.persist(member);
+            }
+            em.flush();
+            em.clear();
+
+            List<Member> result7 = em.createQuery("SELECT m FROM Member m order by m.age desc", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(10)
+                    .getResultList();
+
+            for (Member member : result7) {
+                System.out.println("member.toString() = " + member.toString());
+            }
+            
             tx.commit();
         } catch (Exception e){
             e.printStackTrace();

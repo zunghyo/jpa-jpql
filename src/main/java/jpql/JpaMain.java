@@ -1,6 +1,8 @@
 package jpql;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class JpaMain {
@@ -290,6 +292,7 @@ public class JpaMain {
             }
             */
 
+            /*
             //사용자 정의 함수 호출
             Member member1 = new Member();
             member1.setUsername("memberA");
@@ -310,6 +313,39 @@ public class JpaMain {
             for (String s : result) {
                 System.out.println("s = " + s);
             }
+            */
+
+            //경로 표현식
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("memberA");
+            member.setAge(21);
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //1. 상태필드
+            String query1 = "select m.username from Member m";
+            List<String> result1 = em.createQuery(query1, String.class).getResultList();
+
+            //2. 단일 값 연관 경로(사용 시 주의)
+            String query2 = "select m.team from Member m";
+            List<Team> result2 = em.createQuery(query2, Team.class).getResultList();
+
+            //3. 컬렉션 값 연관 경로(사용 시 주의)
+            String query3 = "select t.members from Team t";
+            Collection result3 = em.createQuery(query3, Collection.class).getResultList();
+
+            //명시적 조인(사용 권장)
+            String query4 = "select m.username from Team t join t.members m";
+            List<String> result4 = em.createQuery(query4, String.class).getResultList();
+
+            System.out.println("result4 = " + result4);
 
             tx.commit();
         } catch (Exception e){

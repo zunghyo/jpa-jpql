@@ -266,6 +266,7 @@ public class JpaMain {
             }
             */
 
+            /*
             //JPQL 기본함수
             Member member1 = new Member();
             member1.setUsername("memberA");
@@ -282,6 +283,28 @@ public class JpaMain {
             String query6 = "select size(t.members) from Team t";
 
             List<String> result = em.createQuery(query3, String.class)
+                    .getResultList();
+
+            for (String s : result) {
+                System.out.println("s = " + s);
+            }
+            */
+
+            //사용자 정의 함수 호출
+            Member member1 = new Member();
+            member1.setUsername("memberA");
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("memberB");
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
+
+            String query = "select function('group_concat', m.username) from Member m";
+
+            List<String> result = em.createQuery(query, String.class)
                     .getResultList();
 
             for (String s : result) {

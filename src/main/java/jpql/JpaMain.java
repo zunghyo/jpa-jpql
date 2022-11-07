@@ -237,6 +237,7 @@ public class JpaMain {
             }
             */
 
+            /*
             //조건식(CASE 등등)
             Member member = new Member();
             member.setAge(10);
@@ -257,6 +258,29 @@ public class JpaMain {
             String query2 = "select coalesce(m.username, '이름 없는 회원') from Member m";
             //3. NULLIF
             String query3 = "select nullif(m.username, '관리자') from Member m";
+            List<String> result = em.createQuery(query3, String.class)
+                    .getResultList();
+
+            for (String s : result) {
+                System.out.println("s = " + s);
+            }
+            */
+
+            //JPQL 기본함수
+            Member member1 = new Member();
+            member1.setUsername("memberA");
+            em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+            String query1 = "select concat('a','b') from Member m";
+            String query2 = "select 'a' || 'b' from Member m";
+            String query3 = "select substring(m.username, 2, 3) from Member m";
+            String query4 = "select trim(m.username) from Member m";
+            String query5 = "select locate('de', 'abcdefg') from Member m";
+            String query6 = "select size(t.members) from Team t";
+
             List<String> result = em.createQuery(query3, String.class)
                     .getResultList();
 

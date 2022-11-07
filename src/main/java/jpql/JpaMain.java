@@ -315,7 +315,8 @@ public class JpaMain {
             }
             */
 
-            //경로 표현식
+            /*
+           //경로 표현식
             Team team = new Team();
             team.setName("teamA");
             em.persist(team);
@@ -346,6 +347,72 @@ public class JpaMain {
             List<String> result4 = em.createQuery(query4, String.class).getResultList();
 
             System.out.println("result4 = " + result4);
+            */
+
+            //페치조인 - 기본
+            Team team1 = new Team();
+            team1.setName("팀A");
+            em.persist(team1);
+
+            Team team2 = new Team();
+            team2.setName("팀B");
+            em.persist(team2);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setTeam(team1);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setTeam(team1);
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(team2);
+            em.persist(member3);
+
+            em.flush();
+            em.clear();
+
+            //지연로딩, 즉시로딩 시 N+1 문제 발생
+            String query1 = "select m from Member m";
+            List<Member> result1 = em.createQuery(query1, Member.class).getResultList();
+
+            for (Member member : result1) {
+                System.out.println("member = " + member.getUsername() + ", " + member.getTeam().getName());
+            }
+
+            //페치조인
+            String query2 = "select m from Member m join fetch m.team";
+            List<Member> result2 = em.createQuery(query2, Member.class).getResultList();
+
+            for (Member member : result2) {
+                System.out.println("member = " + member.getUsername() + ", " + member.getTeam().getName());
+            }
+
+            //컬렉션 페치조인(중복)
+            String query3 = "select t from Team t join fetch t.members";
+            List<Team> result3 = em.createQuery(query3, Team.class).getResultList();
+
+            for (Team team : result3) {
+                System.out.println("team = " + team.getName() + ", " + team.getMembers().size());
+                for (Member member : team.getMembers()) {
+                    System.out.println("member = " + member);
+                }
+            }
+
+            //컬렉션 페치조인(distinct로 중복 제거)
+            String query4 = "select distinct t from Team t join fetch t.members";
+            List<Team> result4 = em.createQuery(query4, Team.class).getResultList();
+
+            for (Team team : result4) {
+                System.out.println("team = " + team.getName() + ", " + team.getMembers().size());
+                for (Member member : team.getMembers()) {
+                    System.out.println("member = " + member);
+                }
+            }
 
             tx.commit();
         } catch (Exception e){
